@@ -59,7 +59,6 @@ public class Person
 
 
 //После рефакторинга. Chat Gtp.
-
 /// <summary>
 /// Доменная модель: Самолёт.
 /// Хранит состояние и бизнес-логику (пассажиры, пилот, координаты).
@@ -190,4 +189,58 @@ public class FlightService
             throw; // Пробрасываем дальше
         }
     }
+}
+
+//Интерфейсы и вспомогательные классы
+public interface IPerson
+{
+    string DocumentId { get; set; }
+    string FirstName { get; set; }
+    string LastName { get; set; }
+}
+
+public class Person : IPerson
+{
+    public string DocumentId { get; set; } = string.Empty;
+    public string FirstName { get; set; } = string.Empty;
+    public string LastName { get; set; } = string.Empty;
+}
+
+/// <summary>
+/// Навигационный сервис.
+/// </summary>
+public interface INavigator
+{
+    Task<string> GetCoordinateAsync(CancellationToken token);
+}
+
+/// <summary>
+/// Kafka-паблишер (интерфейс для тестируемости).
+/// </summary>
+public interface IKafkaProducer
+{
+    Task SendAsync(string topic, string message, CancellationToken token);
+}
+
+/// <summary>
+/// Сущность Flight в БД.
+/// </summary>
+public class FlightEntity
+{
+    public int Id { get; set; }
+    public int FlightId { get; set; }
+    public string Pilot { get; set; } = string.Empty;
+    public string PassengersJson { get; set; } = string.Empty;
+    public DateTime StartedAt { get; set; }
+}
+
+/// <summary>
+/// Outbox-таблица для событий.
+/// </summary>
+public class OutboxEvent
+{
+    public int Id { get; set; }
+    public string EventType { get; set; } = string.Empty;
+    public string Payload { get; set; } = string.Empty;
+    public DateTime CreatedAt { get; set; }
 }
